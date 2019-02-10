@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MP1v2.0</string>
+    <string name="title_activity_quiz_screen">QuizScreen</string>
+    <string name="title_activity_member_detail">MemberDetail</string>
+</resources>
