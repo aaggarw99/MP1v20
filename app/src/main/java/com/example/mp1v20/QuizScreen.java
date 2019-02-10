@@ -175,39 +175,17 @@ public class QuizScreen extends AppCompatActivity {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent= new Intent(Intent.ACTION_PICK,  Contacts.CONTENT_URI);
+                pauseTimer();
 
-                startActivityForResult(intent, PICK_CONTACT);
+                Intent intent= new Intent(ContactsContract.Intents.Insert.ACTION);
+                intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+
+                intent.putExtra(ContactsContract.Intents.Insert.NAME, question.getAnswer());
+
+                startActivity(intent);
 
             }
         });
-
-
-
-//        image.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View arg0) {
-//
-//                System.out.print("GOT HERE");
-//
-//                ArrayList<ContentProviderOperation> ops = new ArrayList<> ();
-//
-//                ops.add(ContentProviderOperation.newInsert(
-//                        ContactsContract.RawContacts.CONTENT_URI)
-//                        .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
-//                        .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
-//                        .build());
-//
-//                ops.add(ContentProviderOperation.newInsert(
-//                        ContactsContract.Data.CONTENT_URI)
-//                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-//                        .withValue(ContactsContract.Data.MIMETYPE,
-//                                ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-//                        .withValue(
-//                                ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
-//                                question.getAnswer()).build());
-//            }
-//        });
 
         //This method will set the que and four options
         updateQuestionAndOptions();
