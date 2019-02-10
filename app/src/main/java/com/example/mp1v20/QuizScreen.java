@@ -23,6 +23,8 @@ import android.content.ContentUris;
 import android.content.ContentProviderOperation;
 import android.content.Intent;
 import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 
 
@@ -86,9 +88,7 @@ public class QuizScreen extends AppCompatActivity {
 
         quit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-                finish();
-                System.exit(0);
-
+                onBackPressed();
             }
         });
 
@@ -188,6 +188,7 @@ public class QuizScreen extends AppCompatActivity {
         });
 
         //This method will set the que and four options
+        startTimer();
         updateQuestionAndOptions();
 
     }
@@ -268,7 +269,7 @@ public class QuizScreen extends AppCompatActivity {
     public void updateQuestionAndOptions() {
 
         resetTimer();
-        startTimer();
+        countdown.start();
 
         // if questions runs out, shuffle members and generate new questions
         if (questionsAL.isEmpty()) {
@@ -297,6 +298,27 @@ public class QuizScreen extends AppCompatActivity {
         int seconds = (int) (timeLeft / 1000) % 60;
 
         timerTextField.setText(String.valueOf(seconds));
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to exit?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        countdown.cancel();
+                        QuizScreen.this.finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        countdown.start();
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public Member[] shuffledMembers(Member[] members) {
