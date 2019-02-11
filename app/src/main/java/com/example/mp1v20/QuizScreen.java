@@ -15,14 +15,8 @@ import java.util.*;
 import android.widget.Toast;
 import java.lang.*;
 import android.os.CountDownTimer;
-import android.content.ContentValues;
-import android.net.Uri;
-import android.provider.Contacts;
 import android.provider.ContactsContract;
-import android.content.ContentUris;
-import android.content.ContentProviderOperation;
 import android.content.Intent;
-import android.content.Context;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 
@@ -171,7 +165,7 @@ public class QuizScreen extends AppCompatActivity {
             }
         });
 
-
+        // click on image handling
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -193,48 +187,7 @@ public class QuizScreen extends AppCompatActivity {
 
     }
 
-    public static void addAsContactConfirmed(final Context context, final String member) {
-
-        Intent intent = new Intent(Intent.ACTION_INSERT);
-        intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
-
-        intent.putExtra(ContactsContract.Intents.Insert.NAME, member);
-
-        context.startActivity(intent);
-
-    }
-
-    public static void addAsContactAutomatic(final Context context, final String member) {
-        String displayName = member;
-
-        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null).build());
-
-        // Names
-        if (displayName != null) {
-            ops.add(ContentProviderOperation
-                    .newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,
-                            ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
-                            displayName).build());
-        }
-        // Asking the Contact provider to create a new contact
-        try {
-            context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Toast.makeText(context, "Contact " + displayName + " added.", Toast.LENGTH_SHORT)
-                .show();
-    }
-
-
+    /* TIMER FUNCTIONALITY */
 
     private void startTimer() {
         countdown = new CountDownTimer(timeLeft, 1000) {
@@ -266,6 +219,14 @@ public class QuizScreen extends AppCompatActivity {
         updateCountDownTimer();
     }
 
+    private void updateCountDownTimer() {
+        int seconds = (int) (timeLeft / 1000) % 60;
+
+        timerTextField.setText(String.valueOf(seconds));
+    }
+
+    /* CORE REFRESH FUNCTION */
+
     public void updateQuestionAndOptions() {
 
         resetTimer();
@@ -294,12 +255,8 @@ public class QuizScreen extends AppCompatActivity {
 
     }
 
-    private void updateCountDownTimer() {
-        int seconds = (int) (timeLeft / 1000) % 60;
 
-        timerTextField.setText(String.valueOf(seconds));
-    }
-
+    // handling for quit button and alert dialog
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -321,16 +278,18 @@ public class QuizScreen extends AppCompatActivity {
         alert.show();
     }
 
+    /* QUESTION, CHOICES, SHUFFLING FUNCTIONS */
+
     public Member[] shuffledMembers(Member[] members) {
         List<Member> l = Arrays.asList(members);
         Collections.shuffle(l);
-
         Member[] shuffled_members = new Member[l.size()];
         shuffled_members = l.toArray(shuffled_members);
 
         return shuffled_members;
     }
 
+    // generates a list of choices
     public String[] generateChoices(Member name) {
         ArrayList<String> choices = new ArrayList<>();
         Random random = new Random();
@@ -361,6 +320,8 @@ public class QuizScreen extends AppCompatActivity {
 
     }
 
+
+    // checks if ans is the correct answer
     public boolean checkCorrect(String ans) {
         if (ans.equals(question.getAnswer())) {
             return true;
@@ -368,6 +329,8 @@ public class QuizScreen extends AppCompatActivity {
         return false;
     }
 
+
+    // Member Class
     private class Member {
         String name;
         int img;
@@ -385,7 +348,5 @@ public class QuizScreen extends AppCompatActivity {
         private int getImg() {
             return img;
         }
-
-
     }
 }

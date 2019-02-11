@@ -40,11 +40,4 @@ public class Question {
     public String getAnswer() {
         return answer;
     }
-
-    // implement shuffle to get random person
-    // start transition to next question
-
-
-
-
 }
